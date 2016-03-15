@@ -24,10 +24,8 @@ cdef class Vector:
     def __repr__(self):
         return '{x} {y}'.format(x=self.x, y=self.y)
 
-    cpdef float dot(self,other):
-        cdef float d
-        d = self.x*other.x + self.y*other.y
-        return d
+    cpdef float dot(self,Vector other):
+        return self.x*other.x + self.y*other.y
     
     property x:
         def __get__(self):
@@ -42,13 +40,11 @@ cdef class Vector:
             self.y = y
             
     cpdef float norm(self):
-        cdef float l
-        l = self.dot(self)**0.5
-        return l
+        return self.dot(self)**0.5
 
 cdef class Particle:
     cdef Vector position, momentum
-    cdef float radius, mass
+    cdef public float radius, mass
     
     def __init__(self, Vector position not None, Vector momentum not None, float radius, float mass):
 
@@ -70,9 +66,10 @@ cdef class Particle:
             self.momentum=m
 
     cpdef Vector velocity(self):
-        cdef Vector v
-        v = self.momentum/self.mass
-        return v
+        return self.momentum/self.mass
+
+    cpdef Particle copy(self):
+        return Particle(self.position, self.momentum, self.radius, self.float)
 
     cpdef bool overlap(self, Particle other):
         cdef Vector displacement
