@@ -75,24 +75,29 @@ def display_particle(p):
     plt.plot([p.position.x],[p.position.y],marker='o',linestyle='', markersize=12)
     plt.show()
 
-def display_trajectory(positions):
+def display_trajectory(particles):
     def update_frame(i, frame):
-        x=[positions[i].x]
-        y=[positions[i].y]
+        x=[particles[i].position.x]
+        y=[particles[i].position.y]
         frame.set_data([x,y])
         return frame,
 
     fig = plt.figure(figsize=(10,10))
-    no_steps = len(positions) 
+    no_steps = len(particles) 
     frame, = plt.plot([],[],marker='o',linestyle='', markersize=12)
    
-    min_x,max_x = min([p.x for p in positions]), max([p.x for p in positions])
-    min_y,max_y = min([p.y for p in positions]), max([p.y for p in positions])
+    min_x,max_x = min([p.position.x for p in particles]), max([p.position.x for p in particles])
+    min_y,max_y = min([p.position.y for p in particles]), max([p.position.y for p in particles])
 
     if min_x != max_x:
         plt.xlim(min_x,max_x)
+    else:
+        plt.xlim(min_x-5, max_x+5)
+
     if min_y != max_y:
         plt.ylim(min_y,max_y)
+    else:
+        plt.ylim(min_y-5,max_y+5)
 
     frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,), interval=5, blit=True, repeat=False)
     plt.show()
