@@ -1,30 +1,17 @@
-import matplotlib.pyplot as plt
-import matplotlib.animation as animation
-from IPython.display import display, clear_output
+from IPython.display import display, clear_output 
+import matplotlib.pyplot as plt 
+import matplotlib.animation as animation 
 import time 
-import numpy as np
-import pyximport; pyximport.install()
+import numpy as np 
+import pyximport; pyximport.install() 
 from oo_fast_functions import Vector
-
-class Particle():
-    def __init__(self, position, momentum, radius, mass):
-        self.position = position
-        self.momentum = momentum
-        self.radius = radius
-        self.mass = mass
-        
-    def velocity(self):
-        return self.momentum/self.mass
-    
-    def overlap(self, other):
-        displacement = self.position - other.position
-        return displacement.norm() < (self.radius + other.radius)
+from oo_fast_functions import Particle
 
 def animate_trajectory(s,loop=False):
 
         def update_frame(i, frame):
-            x = [p.x for p in s.trajectory[i]]
-            y = [p.y for p in s.trajectory[i]]
+            x = [p.position.x for p in s.trajectory[i]]
+            y = [p.position.y for p in s.trajectory[i]]
             frame.set_data([x,y])
             return frame,
 
@@ -47,7 +34,7 @@ def animate_trajectory(s,loop=False):
             plt.ylim(-2, 102)
 
         frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,),
-                                           interval=5, blit=True, repeat=loop)
+                                           interval=10, blit=True, repeat=loop)
 
         plt.show()
 
