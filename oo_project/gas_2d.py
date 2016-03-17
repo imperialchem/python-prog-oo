@@ -1,3 +1,7 @@
+# This is the vector class we are using but we recommend you import Vector
+# from oo_functions as that version has a few more advanced additions that make
+# its execution considerably faster
+
 class Vector():
     def __init__(self, i1,i2):
         self.x = i1

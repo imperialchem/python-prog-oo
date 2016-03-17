@@ -7,36 +7,65 @@ import pyximport; pyximport.install()
 from oo_fast_functions import Vector
 from oo_fast_functions import Particle
 
-def animate_trajectory(s,loop=False):
-
-        def update_frame(i, frame):
+def animate_trajectory(s,loop=False,display_step=False,interval=10):    
+    def update_frame(i, frame,text=None):
+        if equal_size:
             x = [p.position.x for p in s.trajectory[i]]
             y = [p.position.y for p in s.trajectory[i]]
             frame.set_data([x,y])
+        else:
+            xy = [(p.position.x, p.position.y) for p in s.trajectory[i]]
+            frame.set_offsets(xy)
+
+        if display_step:
+            text.set_text(str(i))
+    
+        if text:
+            return frame,text
+        else:
             return frame,
+            
+    particle_size = s.particles[0].radius * 12
+    particle_sizes = [(p.radius*12)**2 for p in s.particles]
+    equal_size = len(set(particle_sizes))==1 
+    no_steps = len(s.trajectory)
+    
+    try: 
+        length = s.box_length /10
+    except AttributeError:
+        length = 10
+    
+    if not equal_size:
+        length = length/1.5
+        particle_sizes = [((p.radius*12)**2)/1.5**2 for p in s.particles]
+        
+    fig = plt.figure(figsize=(length,length))
 
-        no_steps = len(s.trajectory)
-        particle_size = s.particles[0].radius * 12
-        try: 
-            length = s.box_length /10
-        except AttributeError:
-            length = 10
-
-        fig = plt.figure(figsize=(length,length))
-
+    #plt.plot is faster than scatter but can only plot points of equal size
+    if equal_size:
         frame, = plt.plot([],[],  c='b',linestyle='', marker='o',markersize=particle_size ) # initialise plot
+    else:
+        frame = plt.scatter([],[], s=particle_sizes ) # initialise plot
 
-        try:
-            plt.xlim(-2, s.box_length+2) # set x and y limits with a bit of extra padding
-            plt.ylim(-2, s.box_length+2)
-        except AttributeError:
-            plt.xlim(-2, 102) # set x and y limits with a bit of extra padding
-            plt.ylim(-2, 102)
+    if display_step:
+        ax = fig.gca()
+        text = ax.text(length/2,length/2,'')
+    else:
+        text = None
 
-        frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,),
-                                           interval=10, blit=True, repeat=loop)
+    try:
+        plt.xlim(-2, s.box_length+2) # set x and y limits with a bit of extra padding
+        plt.ylim(-2, s.box_length+2)
+    except AttributeError:
+        plt.xlim(-2, 102) # set x and y limits with a bit of extra padding
+        plt.ylim(-2, 102)
 
-        plt.show()
+    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,text),
+                                       interval=interval, blit=True, repeat=loop)
+
+    plt.show()
+
+
 
 def clunky_display_frame(s):
     clear_output(wait=True)
@@ -63,12 +92,6 @@ def clunky_display_frame(s):
     #fig.canvas.draw()
     plt.show()
     display(fig)
-
-def display_final_speeds(s, bins=10):
-    plt.figure(figsize=(10,10))
-    speeds = [p.speed() for p in self.particles]
-    plt.hist(speeds, bins=bins)
-    plt.show()
 
 def display_particle(p):
     plt.figure(figsize=(10,10))
@@ -102,27 +125,10 @@ def display_trajectory(particles):
     frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,), interval=5, blit=True, repeat=False)
     plt.show()
 
-
-def get_particles(no_particles, box_length, init_momentum=None):
-    particles = []
-    gen_momentum = init_momentum is None
-    for i in range(no_particles):
-        init_xy = (np.random.random(2)) * box_length
-        init_position = Vector(init_xy[0], init_xy[1])
-        
-        if gen_momentum:
-            init_mxmy = (np.random.random(2)-0.5) * box_length/100
-            init_momentum = Vector(init_mxmy[0], init_mxmy[1])
-       
-        particles.append(Particle(init_position, init_momentum, 1, 1))
-    
-    return particles
-
 from ipywidgets import interactive
 def display_vecs():
-    plt.figure()
     def interactive_display(directionx=1.0, directiony=0.0):
-        plt.clf()
+        plt.figure(figsize=(8,8))
         vec = Vector(np.float64(3),np.float64(2))
 
         direction = Vector(directionx,directiony)
