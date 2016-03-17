@@ -7,8 +7,8 @@ import pyximport; pyximport.install()
 from oo_fast_functions import Vector
 from oo_fast_functions import Particle
 
-def animate_trajectory(s,loop=False):    
-    def update_frame(i, frame):
+def animate_trajectory(s,loop=False,display_step=False,interval=10):    
+    def update_frame(i, frame,text=None):
         if equal_size:
             x = [p.position.x for p in s.trajectory[i]]
             y = [p.position.y for p in s.trajectory[i]]
@@ -16,8 +16,15 @@ def animate_trajectory(s,loop=False):
         else:
             xy = [(p.position.x, p.position.y) for p in s.trajectory[i]]
             frame.set_offsets(xy)
-        return frame,
 
+        if display_step:
+            text.set_text(str(i))
+    
+        if text:
+            return frame,text
+        else:
+            return frame,
+            
     particle_size = s.particles[0].radius * 12
     particle_sizes = [(p.radius*12)**2 for p in s.particles]
     equal_size = len(set(particle_sizes))==1 
@@ -40,6 +47,12 @@ def animate_trajectory(s,loop=False):
     else:
         frame = plt.scatter([],[], s=particle_sizes ) # initialise plot
 
+    if display_step:
+        ax = fig.gca()
+        text = ax.text(length/2,length/2,'')
+    else:
+        text = None
+
     try:
         plt.xlim(-2, s.box_length+2) # set x and y limits with a bit of extra padding
         plt.ylim(-2, s.box_length+2)
@@ -47,8 +60,8 @@ def animate_trajectory(s,loop=False):
         plt.xlim(-2, 102) # set x and y limits with a bit of extra padding
         plt.ylim(-2, 102)
 
-    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,),
-                                       interval=10, blit=True, repeat=loop)
+    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,text),
+                                       interval=interval, blit=True, repeat=loop)
 
     plt.show()
 
