@@ -2,10 +2,16 @@ from IPython.display import display, clear_output
 import matplotlib.pyplot as plt 
 import matplotlib.animation as animation 
 import time 
+import platform
 import numpy as np 
 import pyximport; pyximport.install() 
-from oo_fast_functions import Vector
-from oo_fast_functions import Particle
+
+try:
+    from oo_fast_functions import Vector
+    from oo_fast_functions import Particle
+except:
+    from gas_2d import Vector
+    from gas_2d import Particle
 
 def animate_trajectory(s,loop=False,display_step=False,interval=10):    
     def update_frame(i, frame,text=None):
@@ -25,6 +31,14 @@ def animate_trajectory(s,loop=False,display_step=False,interval=10):
         else:
             return frame,
             
+    def init():
+        return []
+
+    if platform.system() == 'Darwin':
+        blit=False
+    else:
+        blit=True
+
     particle_size = s.particles[0].radius * 12
     particle_sizes = [(p.radius*12)**2 for p in s.particles]
     equal_size = len(set(particle_sizes))==1 
@@ -61,7 +75,7 @@ def animate_trajectory(s,loop=False,display_step=False,interval=10):
         plt.ylim(-2, 102)
 
     frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,text),
-                                       interval=interval, blit=True, repeat=loop)
+                                       init_func=init,interval=interval, blit=blit, repeat=loop)
 
     plt.show()
 
@@ -105,6 +119,14 @@ def display_trajectory(particles):
         frame.set_data([x,y])
         return frame,
 
+    def init():
+        return []
+
+    if platform.system() == 'Darwin':
+        blit=False
+    else:
+        blit=True
+
     fig = plt.figure(figsize=(10,10))
     no_steps = len(particles) 
     frame, = plt.plot([],[],marker='o',linestyle='', markersize=12)
@@ -122,10 +144,15 @@ def display_trajectory(particles):
     else:
         plt.ylim(min_y-5,max_y+5)
 
-    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,), interval=5, blit=True, repeat=False)
+    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,), interval=5, 
+                                        init_func=init,blit=blit, repeat=False)
     plt.show()
 
-from ipywidgets import interactive
+try:
+    from ipywidgets import interactive
+except ImportError:
+    from IPython.html.widgets import interactive
+
 def display_vecs():
     def interactive_display(directionx=1.0, directiony=0.0):
         plt.figure(figsize=(8,8))
