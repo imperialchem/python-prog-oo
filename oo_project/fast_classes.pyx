@@ -1,3 +1,7 @@
+#This file redefines a 2D Vector and Particle classes using some tricks to make the code run faster
+#You may recognise some of the syntax but do not worry if there are things you don't understand
+#For these classes to work, you must have Cython installed on your system
+
 from cpython cimport bool
 
 # fast Vector class similar to base Python class but defines the types explicitly
@@ -14,15 +18,15 @@ cdef class Vector:
     def __sub__(self,other):
         return (Vector(self.x-other.x,self.y-other.y))
 
-    def __mul__(self,other):
-        return Vector(self.x*other,self.y*other)
-    
-    def __truediv__(self,other):
-        return Vector(self.x/other,self.y/other)
+    def __mul__(self,number):
+        return Vector(self.x*number,self.y*number)
 
-    def __pow__(self,other, ignore):
-        return Vector(self.x**other,self.y**other)
-    
+    def __rmul__(self,number):
+        return Vector(self.x*number,self.y*number)
+   
+    def __truediv__(self,number):
+        return Vector(self.x/number,self.y/number)
+
     def __repr__(self):
         return '{x} {y}'.format(x=self.x, y=self.y)
 
@@ -47,7 +51,7 @@ cdef class Vector:
         return Vector(self.x-other.x,self.y-other.y)
             
     cpdef float norm(self):
-        return self.dot(self)**0.5
+        return (self.x**2+self.y**2)**0.5
 
     # so that our fast vector can be pickled
     def __reduce__(self):

@@ -13,14 +13,16 @@ class Vector():
     def __sub__(self,other):
         return (Vector(self.x-other.x,self.y-other.y))
 
-    def __mul__(self,other):
-        return Vector(self.x*other,self.y*other)
+    #multiply by a number on the left
+    def __mul__(self,number):
+        return Vector(self.x*number,self.y*number)
 
-    def __truediv__(self,other):
-        return Vector(self.x/other,self.y/other)
+    #multiply by a number on the right
+    def __rmul__(self,number):
+        return Vector(self.x*number,self.y*number)
 
-    def __pow__(self,other):
-        return Vector(self.x**other,self.y**other)
+    def __truediv__(self,number):
+        return Vector(self.x/number,self.y/number)
 
     def __repr__(self):
         return '{x} {y}'.format(x=self.x, y=self.y)

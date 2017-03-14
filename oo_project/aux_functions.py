@@ -7,11 +7,11 @@ import numpy as np
 import pyximport; pyximport.install() 
 
 try:
-    from oo_fast_functions import Vector
-    from oo_fast_functions import Particle
+    from fast_classes import Vector, Particle
+    print("Using Vector and Particle classes defined in 'fast_classes.xpy'.")
 except:
-    from gas_2d import Vector
-    from gas_2d import Particle
+    from gas_2d import Vector, Particle
+    print("Using Vector and Particle classes defined in 'gas_2d.py'.")
 
 def animate_trajectory(s,loop=False,display_step=False,interval=10):    
     def update_frame(i, frame,text=None):
