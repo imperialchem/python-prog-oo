@@ -1,17 +1,10 @@
 from IPython.display import display, clear_output 
 import matplotlib.pyplot as plt 
 import matplotlib.animation as animation 
-import time 
+#import time 
 import platform
 import numpy as np 
-import pyximport; pyximport.install() 
-
-try:
-    from fast_classes import Vector, Particle
-    print("Using Vector and Particle classes defined in 'fast_classes.xpy'.")
-except:
-    from gas_2d import Vector, Particle
-    print("Using Vector and Particle classes defined in 'gas_2d.py'.")
+#import pyximport; pyximport.install() 
 
 def animate_trajectory(s,loop=False,display_step=False,interval=10):    
     def update_frame(i, frame,text=None):
