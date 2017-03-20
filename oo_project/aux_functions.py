@@ -71,7 +71,7 @@ def animate_trajectory(s,loop=False,display_step=False,interval=10):
                                        init_func=init,interval=interval, blit=blit, repeat=loop)
 
     plt.show()
-
+    return frame_ani
 
 
 def clunky_display_frame(s):
@@ -140,7 +140,7 @@ def display_trajectory(particles):
     frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(frame,), interval=5, 
                                         init_func=init,blit=blit, repeat=False)
     plt.show()
-
+    return frame_ani
 try:
     from ipywidgets import interactive
 except ImportError:
