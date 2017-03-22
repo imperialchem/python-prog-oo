@@ -1,10 +1,8 @@
 from IPython.display import display, clear_output 
 import matplotlib.pyplot as plt 
 import matplotlib.animation as animation 
-#import time 
 import platform
 import numpy as np 
-#import pyximport; pyximport.install() 
 
 def animate_trajectory(s,loop=False,display_step=False,interval=10):    
     def update_frame(i, frame,text=None):
