@@ -18,17 +18,23 @@ cdef class Vector:
     def __sub__(self,other):
         return (Vector(self.x-other.x,self.y-other.y))
 
-    def __mul__(self,number):
-        return Vector(self.x*number,self.y*number)
-
-    def __rmul__(self,number):
-        return Vector(self.x*number,self.y*number)
+    #Cython does not need self as the first argument
+    #need to try to check if multiplying on the right or left
+    def __mul__(arg1,arg2):
+        try:
+            result=Vector(arg1.x*arg2,arg1.y*arg2)
+        except AttributeError:
+            result=Vector(arg1*arg2.x,arg1*arg2.y)
+        return result
    
     def __truediv__(self,number):
         return Vector(self.x/number,self.y/number)
 
     def __repr__(self):
         return '{x} {y}'.format(x=self.x, y=self.y)
+
+    def copy(self):
+        return Vector(self.x,self.y)
 
     cpdef float dot(self,Vector other):
         return self.x*other.x + self.y*other.y
@@ -100,7 +106,7 @@ cdef class Particle:
         return self.momentum/self.mass
 
     cpdef Particle copy(self):
-        return Particle(self.position, self.momentum, self.radius, self.mass)
+        return Particle(self.position.copy(), self.momentum.copy(), self.radius, self.mass)
 
     cpdef bool overlap(self, Particle other):
         cdef Vector displacement

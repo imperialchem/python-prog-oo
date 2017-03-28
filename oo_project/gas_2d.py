@@ -32,6 +32,10 @@ class Vector():
         '''Represent a vector by a string of 2 coordinates separated by a space'''
         return '{x} {y}'.format(x=self.x, y=self.y)
 
+    def copy(self):
+        '''Create a new object which is a copy of the current.'''
+        return Vector(self.x,self.y)
+
     def dot(self,other):
         '''Calculate the dot product between two 2D vectors'''
         return self.x*other.x + self.y*other.y
