@@ -3,8 +3,12 @@ import matplotlib.animation as animation
 from matplotlib.collections import EllipseCollection
 import numpy as np 
 
-def animate_simulation(s,loop=False,display_step=False,interval=5):
+def animate_simulation(s,loop=False,display_step=False,interval=10):
     '''Animates the trajectory of a simulation object.'''
+    def add_dots():
+        frame.add_collection(dots)
+        return dots,
+    
     def update_frame(i, dots,text=None):
         dots.set_offsets([(p.position.x, p.position.y) for p in s.trajectory[i]])
 
@@ -25,17 +29,18 @@ def animate_simulation(s,loop=False,display_step=False,interval=5):
     frame.set(aspect=1,xlim=(0,s.box_length),ylim=(0,s.box_length))
     dots=EllipseCollection(widths=particle_sizes,heights=particle_sizes,angles=0,
                        units='x',
-                       offsets=[(p.position.x, p.position.y) for p in s.trajectory[0]],
+                       offsets=[],
                        transOffset=frame.transData)
-    frame.add_collection(dots)
 
     if display_step:
         text = frame.text(0.9*s.box_length,0.9*s.box_length,'')
     else:
         text = None
 
-    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(dots,text),
-                                       interval=interval, blit=True, repeat=loop)
+    #on some systems, particularly macOS, blit option below may cause display glitches
+    #change to blit=False if needed
+    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, init_func=add_dots,
+                                        fargs=(dots,text), interval=interval, blit=True, repeat=loop)
 
     return frame_ani
 
@@ -65,15 +70,17 @@ def display_particle_motion(particles):
     frame=plt.gca()
     frame.set(aspect=1,xlim=(min_x-2*rad,max_x+2*rad),ylim=(min_y-2*rad,max_y+2*rad))
     dot=plt.Circle((0,0),radius=rad)
-    frame.add_artist(dot)
-
+    
+    def first_dot():
+        frame.add_artist(dot)
+        return dot,
+        
     def update_frame(i,dot):
         dot.set_center((particles[i].position.x,particles[i].position.y))
-
         return dot,
 
-    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, fargs=(dot,), interval=5, 
-                                        blit=True, repeat=False)
+    frame_ani = animation.FuncAnimation(fig, update_frame, no_steps, init_func=first_dot,
+                                        fargs=(dot,), interval=10, blit=True, repeat=False)
     return frame_ani
 
 
